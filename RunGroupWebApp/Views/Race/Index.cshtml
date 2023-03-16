@@ -20,7 +20,8 @@
                             <p class="card-text">@item.Description</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-outline-info">View</button>
+                                    @*We pass ID like (asp-route-id="item.id") to our control parameter*@
+                                    <a asp-controller="Club" asp-action="Detail" asp-route-id="@item.Id" type="btn btn-sucess" class="btn btn-sm btn-outline-info">View</a>
                                     <button type="button" class="btn btn-sm btn-outline-success">Edit</button>
                                 </div>
                                 <small class="text-muted">@item.RaceCategory</small>
