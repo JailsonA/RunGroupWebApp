@@ -7,7 +7,7 @@
 }
 
 <form method="post" asp-action="Create" enctype="multipart/form-data">
-    <input type="hidden" id="AppUserId" name="AppUserId" asp-for="AppUserId" />
+   @* <input type="hidden" id="AppUserId" name="AppUserId" asp-for="AppUserId" />*@
     <div class="form-row form-group">
         <div class="row">
             <div class="col">
@@ -57,7 +57,7 @@
     <div class="form-row form-group ">
         <div class="col">
 
-            <input asp-for="Image" type="text" class="form-control form-control-lg" placeholder="Image" />
+            <input asp-for="Image" type="file" class="form-control form-control-lg" placeholder="Image" />
             <span asp-validation-for="Image" class="text-danger"></span>
         </div>
     </div>

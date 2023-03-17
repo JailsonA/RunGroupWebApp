@@ -2,16 +2,22 @@
 using Microsoft.EntityFrameworkCore;
 using RunGroopWebApp.Interfaces;
 using RunGroupWebApp.Data;
+using RunGroupWebApp.Interfaces;
 using RunGroupWebApp.Models;
+using RunGroupWebApp.Services;
+using RunGroupWebApp.ViewModels;
 
 namespace RunGroupWebApp.Controllers
 {
     public class ClubController : Controller
     {
         private readonly IClubRepository _clubRepository;
-        public ClubController(IClubRepository clubRepository)
+        private readonly IPhotoService _photoService;
+
+        public ClubController(IClubRepository clubRepository, IPhotoService photoService )
         {
             _clubRepository = clubRepository;
+            _photoService = photoService;
         }
 
         //GET: All Views Index
@@ -32,14 +38,26 @@ namespace RunGroupWebApp.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Create(Club club)
+        public async Task<IActionResult> Create(CreateClubViewModel clubVM)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                return View(club);
+                var result = await _photoService.AddPhotoAsync(clubVM.Image);
+
+                var club = new Club
+                {
+                    Title = clubVM.Title,
+                    Description = clubVM.Description,
+                    Image = result.Url.ToString(),
+                };
+                _clubRepository.Add(club);
+                return RedirectToAction("Index");
             }
-            _clubRepository.Add(club);
-            return RedirectToAction("Index");
+            else {
+                ModelState.AddModelError("", "Photo upload failed");
+            }
+
+            return View(clubVM);
         }
     }
 }
