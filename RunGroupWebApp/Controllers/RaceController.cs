@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RunGroopWebApp.Interfaces;
+using RunGroopWebApp.Repository;
 using RunGroupWebApp.Data;
 using RunGroupWebApp.Models;
 
@@ -7,24 +9,25 @@ namespace RunGroupWebApp.Controllers
 {
     public class RaceController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        public RaceController(ApplicationDbContext context)
+        private readonly IRaceRepository _raceRepository;
+
+        public RaceController(IRaceRepository raceRepository)
         {
-            _context = context;
+            _raceRepository = raceRepository;
         }
 
         //GET: All Views Index
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            List<Race> races = _context.Races.ToList();
+            IEnumerable<Race> races = await _raceRepository.GetAll();
             return View(races);
         }
 
         //GET: All Views Details
-        public IActionResult Detail(int id)
+        public async Task<IActionResult> Detail(int id)
         {
             /*Used Include bcz Address is async join table*/
-            Race race = _context.Races.Include(a => a.Address).FirstOrDefault(e => e.Id == id);
+            Race race = await _raceRepository.GetByIdAsync(id);
             return View(race);
         }
     }
