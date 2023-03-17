@@ -4,6 +4,7 @@ using RunGroopWebApp.Interfaces;
 using RunGroopWebApp.Repository;
 using RunGroupWebApp.Data;
 using RunGroupWebApp.Models;
+using System.Diagnostics;
 
 namespace RunGroupWebApp.Controllers
 {
@@ -29,6 +30,21 @@ namespace RunGroupWebApp.Controllers
             /*Used Include bcz Address is async join table*/
             Race race = await _raceRepository.GetByIdAsync(id);
             return View(race);
+        }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Create(Race race)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(race);
+            }
+            _raceRepository.Add(race);
+            return RedirectToAction("Index");
         }
     }
 }
