@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using RunGroopWebApp.Interfaces;
 using RunGroopWebApp.Repository;
 using RunGroupWebApp.Data;
@@ -71,6 +72,68 @@ namespace RunGroupWebApp.Controllers
             }
 
             return View(raceVM);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var race = await _raceRepository.GetByIdAsync(id);
+            if (race == null) return View("Error");
+            var raceVM = new EditRaceViewModel
+            {
+                Title = race.Title,
+                Description = race.Description,
+                AddressId = race.AddressId,
+                Address = race.Address,
+                URL = race.Image,
+                RaceCategory = race.RaceCategory
+            };
+            return View(raceVM);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, EditRaceViewModel raceVM)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Failed to edit club");
+                return View("Edit", raceVM);
+            }
+
+            var userRace = await _raceRepository.GetByIdAsyncNoTracking(id);
+
+            if (userRace == null)
+            {
+                return View("Error");
+            }
+
+            var photoResult = await _photoService.AddPhotoAsync(raceVM.Image);
+
+            if (photoResult.Error != null)
+            {
+                ModelState.AddModelError("Image", "Photo upload failed");
+                return View(raceVM);
+            }
+
+            if (!string.IsNullOrEmpty(userRace.Image))
+            {
+                _ = _photoService.DeletePhotoAsync(userRace.Image);
+            }
+
+            var race = new Race
+            {
+                Id = id,
+                Title = raceVM.Title,
+                Description = raceVM.Description,
+                Image = photoResult.Url.ToString(),
+                AddressId = raceVM.AddressId,
+                Address = userRace.Address,
+            };
+
+            _raceRepository.Update(race);
+
+            return RedirectToAction("Index");
         }
     }
 }

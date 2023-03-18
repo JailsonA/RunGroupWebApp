@@ -22,7 +22,8 @@
                                 <div class="btn-group">
                                     @*We pass ID like (asp-route-id="item.id") to our control parameter*@
                                     <a asp-controller="Race" asp-action="Detail" asp-route-id="@item.Id" type="btn btn-sucess" class="btn btn-sm btn-outline-info">View</a>
-                                    <button type="button" class="btn btn-sm btn-outline-success">Edit</button>
+                                    <a asp-controller="Race" asp-action="Edit" asp-route-id="@item.Id" type="btn btn-sucess" class="btn btn-sm btn-outline-success">Edit</a>
+                                   
                                 </div>
                                 <small class="text-muted">@item.RaceCategory</small>
                             </div>
